@@ -1,5 +1,5 @@
 
-#Fractus
+# Fractus
 
 A simple Mandlebrot renderer written in JS.
 
