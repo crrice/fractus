@@ -1,0 +1,20 @@
+{
+  "name": "fractus",
+  "version": "0.1.0",
+  "description": "Fractal explorer.",
+  "main": "dist/fractus.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "pug ./ && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crrice/fractus.git"
+  },
+  "author": "Conor Rice",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/crrice/fractus/issues"
+  },
+  "homepage": "https://github.com/crrice/fractus#readme"
+}
