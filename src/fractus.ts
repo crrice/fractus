@@ -1,5 +1,4 @@
 
-
 const container = document.getElementById("easel") as HTMLDivElement;
 const draw_area = document.getElementById("drawarea") as HTMLCanvasElement;
 const ctx = draw_area.getContext("2d")!;
@@ -37,7 +36,7 @@ function makePhasedColorLoop(params: PCLParams): ColorFunc {
 	}
 }
 
-//channel colour = sin(frequency * continuous_index + phase) * 127.5 + 127.5)
+// color = sin(frequency * continuous_index + phase) * amplitude + minimum)
 
 const color_funcs = {
 	// All escape points are white.
@@ -57,8 +56,10 @@ const color_funcs = {
 // Canvas <-> Complex Conversion \\
 //-------------------------------\\
 
-// pixel coord uses a top-left origin
-// complex tile uses a bottom left origin
+// Pixel coord uses a top-left origin; an increase in the y
+// coordinate is downward movement relative to the screen. So we
+// map to a complex tile which uses a bottom left origin and proper
+// y directionality.
 
 function pxCoord2Index(coord: [number, number]): number {
 	let [x, y] = coord;
@@ -73,20 +74,20 @@ function pxIndex2Coord(index: number): [number, number] {
 
 function pxCoord2CompTile(pxcoord: [number, number]): complex {
 	let [px, py] = pxcoord;
-	return [px , py + draw_area.height]
+	return [px , draw_area.height - py]
 }
 
 function compTile2PxCoord(tile: complex): [number, number] {
 	let [tx, ty] = tile;
-	return [tx, ty - draw_area.height];
+	return [tx, draw_area.height - ty];
 }
 
 // The inverse of this function will not be needed.
 function tile2Comp(tile: complex): complex {
 	let [tx, ty] = tile;
 	return [
-		frac_params.br[0] + (frac_params.vw/draw_area.width)*tx,
-		frac_params.br[1] + (frac_params.vh/draw_area.height)*ty,
+		frac_params.bl[0] + (frac_params.vw/draw_area.width)*tx,
+		frac_params.bl[1] + (frac_params.vh/draw_area.height)*ty,
 	];
 }
 
@@ -101,7 +102,7 @@ function pixelIndexToComp(index: number): complex {
 interface FracalParams {
 	vw: number;
 	vh: number;
-	br: complex; // Bottom left of the view area.
+	bl: complex; // Bottom left of the view area.
 
 	max_iters: number;
 	iterFunc: (z: [number, number], c: [number, number]) => [number, number];
@@ -113,7 +114,7 @@ interface FracalParams {
 const frac_params: FracalParams = {
 	vw: 4,
 	vh: 2,
-	br: [-3, -3],
+	bl: [-3, -1],
 
 	max_iters: 1000,
 
@@ -149,6 +150,29 @@ function genFractal(): void {
 }
 
 genFractal();
+
+//----------------\\
+// User Interface \\
+//----------------\\
+
+function mouseEventToPxCoord(event: MouseEvent): [number, number] {
+	return [event.offsetX, event.offsetY];
+}
+
+draw_area.addEventListener("click", ev => {
+	const pxcoord = mouseEventToPxCoord(ev);
+	const comp = tile2Comp(pxCoord2CompTile(pxcoord));
+	console.log(`Clicked pixel coord: ${pxcoord}`);
+	console.log(`Clicked the complex number: ${comp[0]} + ${comp[1]}i.`);
+
+	// For fun, on a click lets zoom to that area 2x.
+	console.log(frac_params.vw, frac_params.vh, frac_params.bl)
+	frac_params.vw = frac_params.vw * 0.5;
+	frac_params.vh = frac_params.vh * 0.5;
+	frac_params.bl = [comp[0] - 0.5*frac_params.vw, comp[1] - 0.5*frac_params.vh];
+	console.log(frac_params.vw, frac_params.vh, frac_params.bl)
+	genFractal();
+});
 
 //-----------------\\
 // Everything Else \\
