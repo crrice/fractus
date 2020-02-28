@@ -162,15 +162,21 @@ function mouseEventToPxCoord(event: MouseEvent): [number, number] {
 draw_area.addEventListener("click", ev => {
 	const pxcoord = mouseEventToPxCoord(ev);
 	const comp = tile2Comp(pxCoord2CompTile(pxcoord));
-	console.log(`Clicked pixel coord: ${pxcoord}`);
 	console.log(`Clicked the complex number: ${comp[0]} + ${comp[1]}i.`);
 
 	// For fun, on a click lets zoom to that area 2x.
-	console.log(frac_params.vw, frac_params.vh, frac_params.bl)
 	frac_params.vw = frac_params.vw * 0.5;
 	frac_params.vh = frac_params.vh * 0.5;
 	frac_params.bl = [comp[0] - 0.5*frac_params.vw, comp[1] - 0.5*frac_params.vh];
-	console.log(frac_params.vw, frac_params.vh, frac_params.bl)
+	genFractal();
+});
+
+const reset_button = document.getElementById("btn-reset") as HTMLDivElement;
+reset_button.addEventListener("click", () => {
+	frac_params.vw = 4;
+	frac_params.vh = 2;
+	frac_params.bl = [-3, -1];
+	frac_params.max_iters = 1000;
 	genFractal();
 });
 
