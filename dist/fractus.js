@@ -86,9 +86,9 @@ function genFractal() {
         let z = [0, 0];
         let tally = 0;
         for (; tally < frac_params.max_iters; tally++) {
+            z = frac_params.iterFunc(z, c);
             if (cAbs2(z) > 4)
                 break;
-            z = frac_params.iterFunc(z, c);
         }
         if (tally === frac_params.max_iters) {
             setPixelColor(pxi, [0, 0, 0, 255]);
@@ -109,14 +109,19 @@ function mouseEventToPxCoord(event) {
 draw_area.addEventListener("click", ev => {
     const pxcoord = mouseEventToPxCoord(ev);
     const comp = tile2Comp(pxCoord2CompTile(pxcoord));
-    console.log(`Clicked pixel coord: ${pxcoord}`);
     console.log(`Clicked the complex number: ${comp[0]} + ${comp[1]}i.`);
     // For fun, on a click lets zoom to that area 2x.
-    console.log(frac_params.vw, frac_params.vh, frac_params.bl);
     frac_params.vw = frac_params.vw * 0.5;
     frac_params.vh = frac_params.vh * 0.5;
     frac_params.bl = [comp[0] - 0.5 * frac_params.vw, comp[1] - 0.5 * frac_params.vh];
-    console.log(frac_params.vw, frac_params.vh, frac_params.bl);
+    genFractal();
+});
+const reset_button = document.getElementById("btn-reset");
+reset_button.addEventListener("click", () => {
+    frac_params.vw = 4;
+    frac_params.vh = 2;
+    frac_params.bl = [-3, -1];
+    frac_params.max_iters = 1000;
     genFractal();
 });
 function cAdd(z1, z2) {
