@@ -134,8 +134,8 @@ function genFractal(): void {
 
 		let tally = 0;
 		for (; tally < frac_params.max_iters; tally++) {
-			if (cAbs2(z) > 4) break;
 			z = frac_params.iterFunc(z, c);
+			if (cAbs2(z) > 4) break;
 		}
 
 		if (tally === frac_params.max_iters) {
