@@ -61,7 +61,7 @@ capturedToBlack(escapeColorFunc) = iters -> n -> (n == iters
 # We need one such set for channel, so we require a dict, with
 # keys R, G, and B, which map to a 3 tuple.
 phasedColorLoop(config) = begin
-    snr = (f, p, m) -> n -> sin(f*n + p)*(1 - m) + m
+    snr = (f, p, m) -> n -> sin(f*n + p)*0.5*(1 - m) + 1 + m
     f = n -> [snr(config["R"]...)(n) snr(config["B"]...)(n) snr(config["G"]...)(n) 1]
     capturedToBlack(f)
 end
